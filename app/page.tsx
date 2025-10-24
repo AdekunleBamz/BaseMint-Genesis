@@ -3,7 +3,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { CONTRACT_ADDRESS } from './config/contract'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const CONTRACT_ABI = [
   {
@@ -67,17 +67,23 @@ export default function Home() {
   // Mint function
   const { writeContract, data: hash, isPending } = useWriteContract()
 
-  const { isLoading: isMintLoading } = useWaitForTransactionReceipt({
+  const { isLoading: isMintLoading, isSuccess, isError } = useWaitForTransactionReceipt({
     hash,
-    onSuccess: () => {
+  })
+
+  useEffect(() => {
+    if (isSuccess) {
       setIsMinting(false)
       alert('NFT minted successfully!')
-    },
-    onError: () => {
+    }
+  }, [isSuccess])
+
+  useEffect(() => {
+    if (isError) {
       setIsMinting(false)
       alert('Minting failed!')
     }
-  })
+  }, [isError])
 
   const handleMint = async () => {
     if (!isConnected) {

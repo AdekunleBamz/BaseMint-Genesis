@@ -21,7 +21,7 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      base: "YourBaseScanAPIKey", // Optional: for contract verification
+      base: process.env.BASESCAN_API_KEY || "", // Optional: for contract verification
     },
     customChains: [
       {

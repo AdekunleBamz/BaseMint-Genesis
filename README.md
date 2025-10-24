@@ -106,17 +106,31 @@ npm run build
 
 ## 📝 Environment Variables
 
-Create a `.env` file with:
+Create a `.env.local` file with:
 
 ```env
+# WalletConnect Project ID (required for wallet connection)
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id_here
+
+# Private key for deployment (keep this secure!)
 PRIVATE_KEY=your_private_key_here
+
+# Base Mainnet RPC URL
 BASE_MAINNET_RPC=https://mainnet.base.org
-BASESCAN_API_KEY=your_basescan_api_key_here  # Optional
+
+# BaseScan API Key (optional - for contract verification)
+BASESCAN_API_KEY=your_basescan_api_key_here
 ```
+
+**Important Security Notes:**
+- Never commit your `.env.local` file to version control
+- The `NEXT_PUBLIC_` prefix makes the variable available in the browser
+- Keep your private key secure and never share it
 
 ## 🎯 Deployment Checklist
 
-- [ ] Add private key to `.env`
+- [ ] Create `.env.local` file with your WalletConnect project ID
+- [ ] Add private key to `.env.local`
 - [ ] Run `npm install`
 - [ ] Run `npm run deploy`
 - [ ] Check contract on BaseScan
