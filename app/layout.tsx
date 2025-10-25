@@ -4,6 +4,9 @@ import { Providers } from './providers'
 export const metadata = {
   title: 'BaseMint Genesis',
   description: 'BaseMint Genesis NFT Collection on Base Mainnet',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({

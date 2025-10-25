@@ -1,0 +1,15 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Base Network Official Logo - Square with curved edges and bold white borders -->
+  <!-- Background with Base blue -->
+  <rect width="32" height="32" rx="8" fill="#0052FF"/>
+  
+  <!-- Bold white border square -->
+  <rect x="4" y="4" width="24" height="24" rx="6" fill="none" stroke="white" stroke-width="3"/>
+  
+  <!-- Inner geometric pattern -->
+  <rect x="8" y="8" width="16" height="16" rx="4" fill="white" opacity="0.9"/>
+  
+  <!-- Center elements -->
+  <rect x="12" y="12" width="8" height="8" rx="2" fill="#0052FF"/>
+  <circle cx="16" cy="16" r="2" fill="white"/>
+</svg>

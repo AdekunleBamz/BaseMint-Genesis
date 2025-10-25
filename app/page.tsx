@@ -116,6 +116,9 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <img src="/logo.svg" alt="BaseMint Genesis Logo" className="w-24 h-24" />
+          </div>
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
             BaseMint Genesis
           </h1>
@@ -166,7 +169,7 @@ export default function Home() {
                 max="5"
                 value={mintQuantity}
                 onChange={(e) => setMintQuantity(parseInt(e.target.value) || 1)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               />
             </div>
 
