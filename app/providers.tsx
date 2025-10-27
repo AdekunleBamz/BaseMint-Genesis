@@ -2,25 +2,15 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider, createConfig, http, cookieStorage, createStorage } from 'wagmi'
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { RainbowKitProvider, getDefaultConfig } from '@rainbow-me/rainbowkit'
 import { base } from 'wagmi/chains'
-import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
+import { injected, walletConnect, coinbaseWallet, metaMask } from 'wagmi/connectors'
 import '@rainbow-me/rainbowkit/styles.css'
 
-const config = createConfig({
+const config = getDefaultConfig({
+  appName: 'BaseMint Genesis',
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
   chains: [base],
-  connectors: [
-    injected({
-      shimDisconnect: false, // Disable auto-reconnection
-    }),
-    walletConnect({
-      projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
-    }),
-    coinbaseWallet({ 
-      appName: 'BaseMint Genesis',
-      appLogoUrl: undefined, // Disable auto-connection
-    }),
-  ],
   transports: {
     [base.id]: http(),
   },
@@ -40,6 +30,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <RainbowKitProvider
           initialChain={base}
           showRecentTransactions={false}
+          appInfo={{
+            appName: 'BaseMint Genesis',
+            learnMoreUrl: 'https://base.org',
+          }}
+          modalSize="compact"
         >
           {children}
         </RainbowKitProvider>

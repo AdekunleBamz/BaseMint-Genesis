@@ -4,6 +4,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { CONTRACT_ADDRESS } from './config/contract'
 import { useState, useEffect } from 'react'
+import { isMobile, isInWalletApp, detectInstalledWallets } from './utils/mobileWalletDetection'
 
 const CONTRACT_ABI = [
   {
@@ -40,6 +41,24 @@ export default function Home() {
   const { address, isConnected } = useAccount()
   const [mintQuantity, setMintQuantity] = useState(1)
   const [isMinting, setIsMinting] = useState(false)
+  const [mobileInfo, setMobileInfo] = useState<{
+    isMobile: boolean;
+    isInWalletApp: boolean;
+    installedWallets: string[];
+  }>({
+    isMobile: false,
+    isInWalletApp: false,
+    installedWallets: [],
+  })
+
+  // Detect mobile environment and installed wallets
+  useEffect(() => {
+    setMobileInfo({
+      isMobile: isMobile(),
+      isInWalletApp: isInWalletApp(),
+      installedWallets: detectInstalledWallets(),
+    })
+  }, [])
 
   // Read contract data
   const { data: totalSupply } = useReadContract({
@@ -130,6 +149,29 @@ export default function Home() {
           <div className="mb-8">
             <ConnectButton />
           </div>
+
+          {/* Mobile Wallet Help */}
+          {mobileInfo.isMobile && !isConnected && (
+            <div className="max-w-md mx-auto bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
+              <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+                Mobile Wallet Connection
+              </h3>
+              <div className="text-sm text-yellow-700 space-y-2">
+                <p><strong>Detected:</strong> {mobileInfo.isMobile ? 'Mobile Device' : 'Desktop'}</p>
+                <p><strong>In Wallet App:</strong> {mobileInfo.isInWalletApp ? 'Yes' : 'No'}</p>
+                <p><strong>Installed Wallets:</strong> {mobileInfo.installedWallets.length > 0 ? mobileInfo.installedWallets.join(', ') : 'None detected'}</p>
+              </div>
+              <div className="mt-3 text-sm text-yellow-700">
+                <p className="font-semibold">If no wallets appear:</p>
+                <ul className="list-disc list-inside mt-1 space-y-1">
+                  <li>Try using WalletConnect (QR code option)</li>
+                  <li>Open this page in your wallet&apos;s built-in browser</li>
+                  <li>Install MetaMask, Trust Wallet, or Coinbase Wallet</li>
+                  <li>Refresh the page after installing a wallet</li>
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Stats */}
