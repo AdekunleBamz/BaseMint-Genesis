@@ -5,6 +5,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { CONTRACT_ADDRESS } from './config/contract'
 import { useState, useEffect } from 'react'
 import { isMobile, isInWalletApp, detectInstalledWallets } from './utils/mobileWalletDetection'
+import { PikachuNFTGenerator } from './utils/nftGenerator'
 
 const CONTRACT_ABI = [
   {
@@ -50,6 +51,8 @@ export default function Home() {
     isInWalletApp: false,
     installedWallets: [],
   })
+  const [nftPreview, setNftPreview] = useState<{ image: string; metadata: any } | null>(null)
+  const [isGeneratingPreview, setIsGeneratingPreview] = useState(false)
 
   // Detect mobile environment and installed wallets
   useEffect(() => {
@@ -59,6 +62,21 @@ export default function Home() {
       installedWallets: detectInstalledWallets(),
     })
   }, [])
+
+  // Generate NFT preview
+  const generatePreview = async () => {
+    setIsGeneratingPreview(true)
+    try {
+      const generator = new PikachuNFTGenerator()
+      const preview = await generator.generateNFT(Math.floor(Math.random() * 1000) + 1)
+      setNftPreview(preview)
+    } catch (error) {
+      console.error('Preview generation error:', error)
+      alert('Failed to generate preview')
+    } finally {
+      setIsGeneratingPreview(false)
+    }
+  }
 
   // Read contract data
   const { data: totalSupply } = useReadContract({
@@ -172,6 +190,53 @@ export default function Home() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* NFT Preview Section */}
+        <div className="max-w-md mx-auto bg-white rounded-lg shadow-xl p-8 mb-12">
+          <h2 className="text-2xl font-bold text-center mb-6">NFT Preview</h2>
+          
+          {nftPreview ? (
+            <div className="text-center">
+              <img 
+                src={nftPreview.image} 
+                alt="NFT Preview" 
+                className="w-64 h-64 mx-auto rounded-lg border-2 border-gray-200 mb-4"
+              />
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                {nftPreview.metadata.name}
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                {nftPreview.metadata.description}
+              </p>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {nftPreview.metadata.attributes.map((attr: any, index: number) => (
+                  <div key={index} className="bg-gray-100 rounded p-2">
+                    <div className="font-semibold text-gray-700">{attr.trait_type}</div>
+                    <div className="text-gray-600">{attr.value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center">
+              <div className="w-64 h-64 mx-auto bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center mb-4">
+                <p className="text-gray-500">No preview generated yet</p>
+              </div>
+            </div>
+          )}
+          
+          <button
+            onClick={generatePreview}
+            disabled={isGeneratingPreview}
+            className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition duration-200 mt-4"
+          >
+            {isGeneratingPreview ? 'Generating...' : 'Generate NFT Preview'}
+          </button>
+          
+          <p className="text-xs text-gray-500 text-center mt-2">
+            Each NFT is unique with different traits and accessories!
+          </p>
         </div>
 
         {/* Stats */}
