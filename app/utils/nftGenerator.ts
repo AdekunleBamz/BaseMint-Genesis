@@ -317,30 +317,56 @@ export class PikachuNFTGenerator {
   private drawBaseCap(capColor: string) {
     const ctx = this.ctx;
     
-    // Cap base
+    // Cap back (crown)
     ctx.fillStyle = capColor;
     ctx.beginPath();
-    ctx.ellipse(256, 130, 75, 20, 0, 0, Math.PI * 2);
+    ctx.ellipse(256, 105, 70, 35, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Cap top
+    // Cap front panel (billboard)
     ctx.fillStyle = capColor;
     ctx.beginPath();
-    ctx.ellipse(256, 100, 60, 30, 0, 0, Math.PI * 2);
+    ctx.ellipse(256, 135, 80, 25, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Base logo (simplified)
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 24px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('BASE', 256, 140);
-    
-    // Cap brim (darker shade)
-    const darkerShade = this.darkenColor(capColor, 20);
+    // Add some depth/shadow to cap
+    const darkerShade = this.darkenColor(capColor, 25);
     ctx.fillStyle = darkerShade;
     ctx.beginPath();
-    ctx.ellipse(256, 150, 85, 8, 0, 0, Math.PI * 2);
+    ctx.ellipse(256, 140, 80, 10, 0, Math.PI, false);
     ctx.fill();
+    
+    // Cap brim (darker shade)
+    const brimColor = this.darkenColor(capColor, 30);
+    ctx.fillStyle = brimColor;
+    ctx.beginPath();
+    ctx.ellipse(256, 155, 90, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Top button of cap
+    ctx.fillStyle = darkerShade;
+    ctx.beginPath();
+    ctx.arc(256, 85, 8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // BASED logo with background
+    // White background circle for text
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.ellipse(256, 135, 50, 18, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Text shadow for depth
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.font = 'bold 26px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('BASED', 257, 137);
+    
+    // Main text
+    ctx.fillStyle = capColor;
+    ctx.font = 'bold 26px Arial';
+    ctx.fillText('BASED', 256, 135);
   }
 
   private drawGlasses() {
