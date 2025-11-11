@@ -5,7 +5,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { CONTRACT_ADDRESS } from './config/contract'
 import { useState, useEffect } from 'react'
 import { isMobile, isInWalletApp, detectInstalledWallets } from './utils/mobileWalletDetection'
-import { PikachuNFTGenerator } from './utils/nftGenerator'
+import Image from 'next/image'
 
 const CONTRACT_ABI = [
   {
@@ -63,13 +63,22 @@ export default function Home() {
     })
   }, [])
 
-  // Generate NFT preview
+  // Generate NFT preview via API (server-side)
   const generatePreview = async () => {
     setIsGeneratingPreview(true)
     try {
-      const generator = new PikachuNFTGenerator()
-      const preview = await generator.generateNFT(Math.floor(Math.random() * 1000) + 1)
-      setNftPreview(preview)
+      const randomTokenId = Math.floor(Math.random() * 1000) + 1
+      const response = await fetch(`/api/nft/${randomTokenId}`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate preview')
+      }
+      
+      const data = await response.json()
+      setNftPreview({
+        image: data.image,
+        metadata: data.metadata
+      })
     } catch (error) {
       console.error('Preview generation error:', error)
       alert('Failed to generate preview')
@@ -154,7 +163,7 @@ export default function Home() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-6">
-            <img src="/logo.svg" alt="BaseMint Genesis Logo" className="w-24 h-24" />
+            <Image src="/logo.svg" alt="BaseMint Genesis Logo" width={96} height={96} priority />
           </div>
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
             BaseMint Genesis
@@ -202,21 +211,14 @@ export default function Home() {
                 src={nftPreview.image} 
                 alt="NFT Preview" 
                 className="w-64 h-64 mx-auto rounded-lg border-2 border-gray-200 mb-4"
+                style={{ imageRendering: 'pixelated' }}
               />
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 {nftPreview.metadata.name}
               </h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600">
                 {nftPreview.metadata.description}
               </p>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                {nftPreview.metadata.attributes.map((attr: any, index: number) => (
-                  <div key={index} className="bg-gray-100 rounded p-2">
-                    <div className="font-semibold text-gray-700">{attr.trait_type}</div>
-                    <div className="text-gray-600">{attr.value}</div>
-                  </div>
-                ))}
-              </div>
             </div>
           ) : (
             <div className="text-center">

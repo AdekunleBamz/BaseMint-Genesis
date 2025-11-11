@@ -21,14 +21,16 @@ export class PikachuNFTGenerator {
     this.drawBackground(traits.backgroundColor);
     
     // Draw Pikachu body
-    this.drawPikachu();
+    this.drawPikachuWithTraits(traits);
     
     // Draw Base logo cap
-    this.drawBaseCap();
+    this.drawBaseCap(traits.capColor);
     
     // Draw accessories based on traits
     if (traits.hasGlasses) this.drawGlasses();
     if (traits.hasNecklace) this.drawNecklace();
+    if (traits.hasBowtie) this.drawBowtie();
+    if (traits.hasBandana) this.drawBandana();
     
     // Add token ID watermark
     this.drawTokenId(tokenId);
@@ -46,22 +48,71 @@ export class PikachuNFTGenerator {
   private generateTraits(tokenId: number) {
     // Use tokenId as seed for consistent traits
     const seed = tokenId * 12345;
+    const seed2 = tokenId * 67890;
+    const seed3 = tokenId * 54321;
+    
     return {
       backgroundColor: this.getBackgroundColor(seed),
+      bodyColor: this.getBodyColor(seed2),
+      cheekColor: this.getCheekColor(seed3),
       hasGlasses: (seed % 3) === 0,
       hasNecklace: (seed % 4) === 0,
       capColor: this.getCapColor(seed),
+      expression: this.getExpression(seed2),
+      tailPattern: (seed3 % 5),
+      hasBowtie: (seed2 % 7) === 0,
+      hasBandana: (seed3 % 6) === 0,
     };
   }
 
   private getBackgroundColor(seed: number): string {
-    const colors = ['#FFE4B5', '#E6E6FA', '#F0F8FF', '#FFF8DC', '#F5F5DC'];
+    const colors = [
+      '#FFE4B5', '#E6E6FA', '#F0F8FF', '#FFF8DC', '#F5F5DC',
+      '#FFB6C1', '#E0FFFF', '#F5DEB3', '#FFF0F5', '#F0E68C',
+      '#D8BFD8', '#FAFAD2', '#FFE4E1', '#E0E0E0', '#FDF5E6'
+    ];
     return colors[seed % colors.length];
   }
 
   private getCapColor(seed: number): string {
-    const colors = ['#0052FF', '#00D4FF', '#FF6B35', '#28A745', '#FFC107'];
+    const colors = [
+      '#0052FF', '#00D4FF', '#FF6B35', '#28A745', '#FFC107',
+      '#9B59B6', '#E74C3C', '#1ABC9C', '#F39C12', '#34495E',
+      '#FF1493', '#00CED1', '#FF4500', '#32CD32', '#FFD700'
+    ];
     return colors[seed % colors.length];
+  }
+
+  private getBodyColor(seed: number): string {
+    const colors = [
+      '#FFD700', // Classic yellow
+      '#FFE135', // Bright yellow
+      '#FFC500', // Golden yellow
+      '#FFB700', // Deep yellow
+      '#FFF44F', // Light yellow
+      '#FFE873', // Cream yellow
+      '#FFDB58', // Mustard yellow
+      '#FFA500', // Orange tint
+    ];
+    return colors[seed % colors.length];
+  }
+
+  private getCheekColor(seed: number): string {
+    const colors = [
+      '#FF69B4', // Hot pink
+      '#FF1493', // Deep pink
+      '#FF6B9D', // Medium pink
+      '#FF85A1', // Light pink
+      '#FF4500', // Orange red
+      '#FF0066', // Bright pink
+      '#FF91A4', // Soft pink
+    ];
+    return colors[seed % colors.length];
+  }
+
+  private getExpression(seed: number): string {
+    const expressions = ['happy', 'wink', 'excited', 'cool', 'cute'];
+    return expressions[seed % expressions.length];
   }
 
   private drawBackground(color: string) {
@@ -85,23 +136,25 @@ export class PikachuNFTGenerator {
     }
   }
 
-  private drawPikachu() {
+  private drawPikachuWithTraits(traits: any) {
     const ctx = this.ctx;
+    const bodyColor = traits.bodyColor;
+    const cheekColor = traits.cheekColor;
     
-    // Pikachu body (yellow)
-    ctx.fillStyle = '#FFD700';
+    // Pikachu body
+    ctx.fillStyle = bodyColor;
     ctx.beginPath();
     ctx.ellipse(256, 300, 80, 100, 0, 0, Math.PI * 2);
     ctx.fill();
     
     // Pikachu head
-    ctx.fillStyle = '#FFD700';
+    ctx.fillStyle = bodyColor;
     ctx.beginPath();
     ctx.arc(256, 180, 70, 0, Math.PI * 2);
     ctx.fill();
     
     // Ears
-    ctx.fillStyle = '#FFD700';
+    ctx.fillStyle = bodyColor;
     ctx.beginPath();
     ctx.moveTo(200, 120);
     ctx.lineTo(180, 80);
@@ -132,24 +185,6 @@ export class PikachuNFTGenerator {
     ctx.closePath();
     ctx.fill();
     
-    // Eyes
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.arc(240, 160, 8, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(272, 160, 8, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Eye highlights
-    ctx.fillStyle = '#FFFFFF';
-    ctx.beginPath();
-    ctx.arc(242, 158, 3, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(274, 158, 3, 0, Math.PI * 2);
-    ctx.fill();
-    
     // Nose
     ctx.fillStyle = '#000000';
     ctx.beginPath();
@@ -166,8 +201,11 @@ export class PikachuNFTGenerator {
     ctx.arc(256, 200, 15, 0, Math.PI);
     ctx.stroke();
     
-    // Cheeks (red circles)
-    ctx.fillStyle = '#FF69B4';
+    // Draw expression (eyes)
+    this.drawExpression(traits.expression);
+    
+    // Cheeks (colorful circles)
+    ctx.fillStyle = cheekColor;
     ctx.beginPath();
     ctx.arc(200, 190, 12, 0, Math.PI * 2);
     ctx.fill();
@@ -176,7 +214,7 @@ export class PikachuNFTGenerator {
     ctx.fill();
     
     // Arms
-    ctx.fillStyle = '#FFD700';
+    ctx.fillStyle = bodyColor;
     ctx.beginPath();
     ctx.ellipse(200, 280, 25, 40, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -192,7 +230,72 @@ export class PikachuNFTGenerator {
     ctx.ellipse(282, 380, 30, 50, 0, 0, Math.PI * 2);
     ctx.fill();
     
-    // Tail
+    // Tail with variation
+    this.drawTail(bodyColor, traits.tailPattern);
+  }
+
+  private drawExpression(expression: string) {
+    const ctx = this.ctx;
+    
+    // Eyes based on expression
+    ctx.fillStyle = '#000000';
+    
+    if (expression === 'wink') {
+      // Left eye winking
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(230, 160);
+      ctx.lineTo(250, 160);
+      ctx.stroke();
+      // Right eye normal
+      ctx.beginPath();
+      ctx.arc(272, 160, 8, 0, Math.PI * 2);
+      ctx.fill();
+      // Eye highlight
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(274, 158, 3, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (expression === 'excited') {
+      // Bigger eyes
+      ctx.beginPath();
+      ctx.arc(240, 160, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(272, 160, 10, 0, Math.PI * 2);
+      ctx.fill();
+      // Extra highlights
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(243, 157, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(275, 157, 4, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // Normal eyes (default case)
+      ctx.beginPath();
+      ctx.arc(240, 160, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(272, 160, 8, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Eye highlights
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(242, 158, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(274, 158, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  private drawTail(bodyColor: string, pattern: number) {
+    const ctx = this.ctx;
+    
+    ctx.fillStyle = bodyColor;
     ctx.beginPath();
     ctx.moveTo(180, 320);
     ctx.quadraticCurveTo(120, 300, 100, 350);
@@ -201,8 +304,9 @@ export class PikachuNFTGenerator {
     ctx.closePath();
     ctx.fill();
     
-    // Tail stripes
-    ctx.fillStyle = '#8B4513';
+    // Tail stripes with variation
+    const stripeColors = ['#8B4513', '#654321', '#A0522D', '#CD853F', '#D2691E'];
+    ctx.fillStyle = stripeColors[pattern % stripeColors.length];
     for (let i = 0; i < 3; i++) {
       ctx.beginPath();
       ctx.arc(140 + i * 15, 380 + i * 10, 8, 0, Math.PI * 2);
@@ -210,17 +314,17 @@ export class PikachuNFTGenerator {
     }
   }
 
-  private drawBaseCap() {
+  private drawBaseCap(capColor: string) {
     const ctx = this.ctx;
     
     // Cap base
-    ctx.fillStyle = '#0052FF';
+    ctx.fillStyle = capColor;
     ctx.beginPath();
     ctx.ellipse(256, 130, 75, 20, 0, 0, Math.PI * 2);
     ctx.fill();
     
     // Cap top
-    ctx.fillStyle = '#0052FF';
+    ctx.fillStyle = capColor;
     ctx.beginPath();
     ctx.ellipse(256, 100, 60, 30, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -231,8 +335,9 @@ export class PikachuNFTGenerator {
     ctx.textAlign = 'center';
     ctx.fillText('BASE', 256, 140);
     
-    // Cap brim
-    ctx.fillStyle = '#003399';
+    // Cap brim (darker shade)
+    const darkerShade = this.darkenColor(capColor, 20);
+    ctx.fillStyle = darkerShade;
     ctx.beginPath();
     ctx.ellipse(256, 150, 85, 8, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -304,8 +409,10 @@ export class PikachuNFTGenerator {
     const attributes = [
       { trait_type: 'Character', value: 'Pikachu' },
       { trait_type: 'Cap', value: 'Base Logo Cap' },
-      { trait_type: 'Background', value: traits.backgroundColor },
+      { trait_type: 'Body Color', value: traits.bodyColor },
+      { trait_type: 'Cheek Color', value: traits.cheekColor },
       { trait_type: 'Cap Color', value: traits.capColor },
+      { trait_type: 'Expression', value: traits.expression },
     ];
 
     if (traits.hasGlasses) {
@@ -316,9 +423,17 @@ export class PikachuNFTGenerator {
       attributes.push({ trait_type: 'Accessory', value: 'Base Logo Necklace' });
     }
 
+    if (traits.hasBowtie) {
+      attributes.push({ trait_type: 'Accessory', value: 'Bowtie' });
+    }
+
+    if (traits.hasBandana) {
+      attributes.push({ trait_type: 'Accessory', value: 'Bandana' });
+    }
+
     return {
-      name: `BaseMint Genesis #${tokenId}`,
-      description: 'A unique Pikachu NFT wearing a Base logo cap, minted on Base Mainnet. Each NFT is generated with unique traits and accessories.',
+      name: `BMG #${tokenId}`,
+      description: 'A unique Based Pikachu.',
       image: `data:image/png;base64,${base64Image}`,
       external_url: 'https://basemint-genesis.vercel.app',
       attributes: attributes,
@@ -326,6 +441,59 @@ export class PikachuNFTGenerator {
       animation_url: null,
       youtube_url: null,
     };
+  }
+
+  private drawBowtie() {
+    const ctx = this.ctx;
+    
+    // Bowtie
+    ctx.fillStyle = '#FF1493';
+    ctx.beginPath();
+    ctx.moveTo(240, 260);
+    ctx.lineTo(250, 270);
+    ctx.lineTo(240, 280);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(272, 260);
+    ctx.lineTo(262, 270);
+    ctx.lineTo(272, 280);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.fillStyle = '#C71585';
+    ctx.beginPath();
+    ctx.ellipse(256, 270, 6, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  private drawBandana() {
+    const ctx = this.ctx;
+    
+    // Bandana around neck
+    ctx.fillStyle = '#FF4500';
+    ctx.beginPath();
+    ctx.arc(256, 240, 35, 0, Math.PI);
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = '#FF4500';
+    ctx.stroke();
+    
+    // Bandana knot
+    ctx.fillStyle = '#FF6347';
+    ctx.beginPath();
+    ctx.moveTo(285, 240);
+    ctx.lineTo(305, 250);
+    ctx.lineTo(295, 265);
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(285, 240);
+    ctx.lineTo(305, 230);
+    ctx.lineTo(295, 215);
+    ctx.closePath();
+    ctx.fill();
   }
 
   private lightenColor(color: string, percent: number): string {
@@ -337,5 +505,16 @@ export class PikachuNFTGenerator {
     return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
       (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
       (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+  }
+
+  private darkenColor(color: string, percent: number): string {
+    const num = parseInt(color.replace('#', ''), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) - amt;
+    const G = (num >> 8 & 0x00FF) - amt;
+    const B = (num & 0x0000FF) - amt;
+    return '#' + (0x1000000 + (R > 0 ? R : 0) * 0x10000 +
+      (G > 0 ? G : 0) * 0x100 +
+      (B > 0 ? B : 0)).toString(16).slice(1);
   }
 }
